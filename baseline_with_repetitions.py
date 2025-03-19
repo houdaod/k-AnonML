@@ -21,6 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 from top_down_greedy.anonymizer import tdg_get_result_one
 from utils.data import read_raw, write_anon
 from utils.types import AnonMethod, Classifier, Dataset, MLRes
+from datetime import datetime, timezone #Importation por la nouvelle version de utc
 
 
 def main(args):
@@ -50,7 +51,10 @@ def main(args):
     # Generalization hierarchies path
     gen_path = os.path.join('generalization', 'hierarchies', dataset, '')  # trailing /
     # folder for all results
-    res_folder = os.path.join('results', dataset, anon_method, datetime.utcnow().isoformat().replace(':', '_'))
+    #res_folder = os.path.join('results', dataset, anon_method, datetime.utcnow().isoformat().replace(':', '_'))#Ancienne version
+    
+    res_folder = os.path.join('results', dataset, anon_method, datetime.now(timezone.utc).isoformat().replace(':', '_'))#nouvelle version
+
 
     # ML results path
     output_path = os.path.join(res_folder, f'{dataset}_{os.path.basename(anon_method)}_{os.path.basename(classifier)}_k_{args.stop_k}.csv')
@@ -219,7 +223,8 @@ def main(args):
 
                     for index_row, row in X.iterrows():
                         cat_iter = iter(IS_CAT2)
-                        for index_col, col in row.iteritems():
+                        #for index_col, col in row.iteritems(): Ancienne version de pandas
+                        for index_col, col in row.items():
                             # only quasi identifiers
                             if index_col not in QI_NAMES:
                                 continue
@@ -307,6 +312,8 @@ def main(args):
             print(att)
 
 
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Anonymize data utilising different algorithms and analyse the effects of the anonymization on the data'
@@ -362,3 +369,4 @@ if __name__ == "__main__":
         exit(1)
 
     main(args)
+    
